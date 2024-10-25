@@ -3,7 +3,6 @@ import { P2pRecentTranscations } from "../../../components/P2pRecentTransactions
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../lib/auth";
 import prisma from "@repo/db/client";
-import { timeStamp } from "console";
 import { BalanceCard } from "../../../components/BalanceCard";
 
 async function getBalance() {
