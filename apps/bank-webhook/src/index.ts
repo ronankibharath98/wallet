@@ -10,7 +10,7 @@ app.post("/hdfcWebhook", async (req, res) => {
     const paymentInformation: {
         token: string;
         userId: string;
-        amount: string
+        amount: string;
     } = {
         token: req.body.token,
         userId: req.body.user_identifier,
@@ -18,6 +18,19 @@ app.post("/hdfcWebhook", async (req, res) => {
     };
 
     try {
+        const txnSuccess = await db.onRampTransaction.findUnique({
+            where :{ token : paymentInformation.token},
+            select: {
+                status: true
+            },
+        })
+
+        if(txnSuccess?.status === "Success"){
+            return res.json({
+                message: "Tansaction already processed"
+            })
+        }
+         
         await db.$transaction([
             db.balance.updateMany({
                 where: {
@@ -41,7 +54,8 @@ app.post("/hdfcWebhook", async (req, res) => {
         ]);
 
         res.json({
-            message: "Captured"
+            message: "Captured",
+            txnSuccess
         })
     } catch(e) {
         console.error(e);
@@ -52,4 +66,4 @@ app.post("/hdfcWebhook", async (req, res) => {
 
 })
 
-app.listen(3003);
+app.listen(8000);
